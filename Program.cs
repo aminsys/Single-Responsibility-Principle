@@ -1,6 +1,19 @@
 ﻿namespace Single_Responsibility_Principal 
 {
 
+    public class StudentFactory 
+    {
+        public Student CreateNewStudent(string name) => new Student(name);
+    }
+
+    public class StudentOperations 
+    {
+        public void ChangeStudentName(Student student, string name)
+        {
+            student.setName(name);
+        }
+    }
+
     public class StudentRepository 
     {
         #region Fileds
@@ -22,13 +35,13 @@
         }
 
         // Should not be a part of the class StudentRepository
-        public void ChangeStudentName(Student student, string name)
-        {
-            student.setName(name);
-        }
+        // public void ChangeStudentName(Student student, string name)
+        // {
+        //     student.setName(name);
+        // }
 
         // Should not be a part of the class StudentRepository
-        public Student CreateNewStudent(string name) => new Student(name);
+        // public Student CreateNewStudent(string name) => new Student(name);
 
         public Student GetStudentByName(string name) 
         {
@@ -68,10 +81,13 @@
         public static void Main(string[] args)
         {
             StudentRepository studentRepository = new StudentRepository();
+
+            StudentFactory studentFactory = new StudentFactory();
+            StudentOperations studentOperations = new StudentOperations();
             
-            // Demo of source code that doesn't follow SOLID principle
             studentRepository.AddStudent(new Student("Jin Muri"));
-            studentRepository.AddStudent(studentRepository.CreateNewStudent("Sara Jess"));
+            // studentRepository.AddStudent(studentRepository.CreateNewStudent("Sara Jess")); Method moved to class StudentFactory
+            studentRepository.AddStudent(studentFactory.CreateNewStudent("Sara Jess"));
             Console.WriteLine(studentRepository.GetStudentByName("Sara Jess").getName());
             Console.WriteLine(studentRepository.GetStudentByName("Jin Muri").getName());
 
@@ -84,10 +100,10 @@
 
             student = studentRepository.GetStudentByName("Kalle Anka");
             string oldStudentName = student.getName();
-            studentRepository.ChangeStudentName(student, "Mao Barang");
+            // studentRepository.ChangeStudentName(student, "Mao Barang"); Method moved to class StudentOperations
+            studentOperations.ChangeStudentName(student, "Mao Barang");
             Console.WriteLine("Student name is changed from  {0} to {1}", oldStudentName , student.getName());
-            // End of demo
-            
+
             Console.WriteLine("Show the students left in the list.");
             foreach(var s in studentRepository.GetAllStudents())
             {
